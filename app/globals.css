@@ -30,4 +30,13 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  .btn_lblue {
+    @apply border-lBlue bg-lBlue px-8 py-3 text-lWhite;
+  }
+  .btn_odsYellow {
+    @apply border-odsYellow bg-odsYellow px-8 py-3 text-odsBlue;
+  }
+  .btn_odsBlue {
+    @apply border-odsBlue bg-odsBlue px-8 py-3 text-odsYellow;
+  }
 }

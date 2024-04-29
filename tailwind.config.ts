@@ -5,6 +5,7 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/flowbite/**/*.js",
   ],
   theme: {
     extend: {
@@ -14,7 +15,18 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
+    colors: {
+      lBlue: "#0C359E",
+      lPink: "#EE99C2",
+      lCream: "#FFE3CA",
+      lWhite: "#F6F5F5",
+
+      odsBlue: "#00173F",
+      odsPurple: "#8E44AD",
+      odsGray: "#F2F2F2",
+      odsYellow: "#FFD700",
+    },
   },
-  plugins: [],
+  plugins: [require("daisyui"), require("flowbite/plugin")],
 };
 export default config;
