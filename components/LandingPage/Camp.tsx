@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { WHY_THIS_SITE } from "@/constants";
+import { WHY_THIS_SITE } from "../../constants/index";
 const Camp = () => {
   return (
     <div className="flex flex-col bg-odsBlue 2xl:max-container  py-10 lg:mb-10 lg:py-20 xl:mb-20 text-odsGray">

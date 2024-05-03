@@ -1,5 +1,5 @@
+const colors = require("tailwindcss/colors");
 import type { Config } from "tailwindcss";
-
 const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -16,6 +16,7 @@ const config: Config = {
       },
     },
     colors: {
+      ...colors,
       lBlue: "#0C359E",
       lPink: "#EE99C2",
       lCream: "#FFE3CA",

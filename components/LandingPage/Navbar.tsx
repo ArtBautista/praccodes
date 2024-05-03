@@ -34,8 +34,11 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto pt-3">
         <div className="flex justify-between">
           <div className="flex items-center space-x-1">
-            <div className="">
-              <a className="btn btn-ghost text-xl">Odyssey</a>
+            <div className="flex reverse ">
+              <Image src={"./globle.svg"} alt={"Logo"} width={24} height={24} />
+              <div className="">
+                <a className="btn btn-ghost text-xl">Odyssey</a>
+              </div>
             </div>
             <div className=" items-center md:flex hidden ">
               <div className="">
@@ -68,8 +71,10 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex">
-            <div className="pr-5">
-              <Button type="button" title="Login" variant="btn_odsYellow" />
+            <div className="pr-5 md:flex hidden ">
+              <Link href="/auth/login">
+                <Button type="button" title="Login" variant="btn_odsYellow" />
+              </Link>
             </div>
 
             <div className="md:hidden flex items-center pl-2 pr-10">
