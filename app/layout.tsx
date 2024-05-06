@@ -6,7 +6,7 @@ import AuthProvider from "@/components/Provider";
 const arimo = Arimo({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Odyssey",
+  title: "Odyssey [ADMIN]",
   description: "Odyssey: LMS",
 };
 

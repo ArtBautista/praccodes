@@ -16,7 +16,7 @@ const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [error, setError] = useState("");
-  const [user, setUser] = useState({
+  const [admin, setAdmin] = useState({
     name: "",
     email: "",
     password: "",
@@ -24,26 +24,26 @@ const RegisterForm = () => {
 
   const handleInputChange = (event: any) => {
     const { name, value } = event.target;
-    return setUser((prevInfo) => ({ ...prevInfo, [name]: value }));
+    return setAdmin((prevInfo) => ({ ...prevInfo, [name]: value }));
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    console.log(user);
+    console.log(admin);
     try {
-      if (!user.name || !user.email || !user.password) {
+      if (!admin.name || !admin.email || !admin.password) {
         setError("please fill all the fields");
         return;
       }
 
       const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-      if (!emailRegex.test(user.email)) {
+      if (!emailRegex.test(admin.email)) {
         setError("Invalid email id");
         return;
       }
 
-      const res = await axios.post("/api/register", user);
+      const res = await axios.post("/api/register", admin);
       console.log(res.data);
       if (res.status == 200 || res.status == 201) {
         console.log("user added Successfully");
@@ -56,7 +56,7 @@ const RegisterForm = () => {
     } finally {
       setLoading(false);
 
-      setUser({
+      setAdmin({
         name: "",
         email: "",
         password: "",
@@ -76,7 +76,7 @@ const RegisterForm = () => {
                 className="grow"
                 placeholder="Username"
                 name="name"
-                value={user.name}
+                value={admin.name}
                 onChange={handleInputChange}
               />
               {error && <span className="text-red-500 text-sm">{error}</span>}
@@ -88,7 +88,7 @@ const RegisterForm = () => {
                 type={"email"}
                 className="grow"
                 name="email"
-                value={user.email}
+                value={admin.email}
                 onChange={handleInputChange}
               />
               <div className="label">
@@ -104,7 +104,7 @@ const RegisterForm = () => {
                 type={"password"}
                 className="grow"
                 name="password"
-                value={user.password}
+                value={admin.password}
                 onChange={handleInputChange}
               />
               <div className="label">

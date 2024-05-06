@@ -1,5 +1,5 @@
 import { connect } from "@/utils/config/dbConfig";
-import User from "@/utils/models/auth";
+import Admin from "@/utils/models/auth";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -18,15 +18,15 @@ export const authOptions: NextAuthOptions = {
         };
         try {
           await connect();
-          const user = await User.findOne({ email });
-          if (!user) {
+          const admin = await Admin.findOne({ email });
+          if (!admin) {
             return null;
           }
-          const passwordMatch = await bcrypt.compare(password, user.password);
+          const passwordMatch = await bcrypt.compare(password, admin.password);
           if (!passwordMatch) {
             return null;
           }
-          return user;
+          return admin;
         } catch (error) {
           console.log("Error:", error);
         }
@@ -48,15 +48,15 @@ export const authOptions: NextAuthOptions = {
         try {
           const { name, email } = user;
           await connect();
-          const ifUserExist = await User.findOne({ email });
-          if (ifUserExist) {
+          const ifAdminExist = await Admin.findOne({ email });
+          if (ifAdminExist) {
             return user;
           }
-          const newUser = new User({
+          const newAdmin = new Admin({
             name: name,
             email: email,
           });
-          const res = await newUser.save();
+          const res = await newAdmin.save();
 
           if (res.status === 200 || res.status === 201) {
             return user;

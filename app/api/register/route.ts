@@ -1,4 +1,4 @@
-import User from "@/utils/models/auth";
+import Admin from "@/utils/models/auth";
 import { connect } from "@/utils/config/dbConfig";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,27 +8,27 @@ connect();
 export async function POST(req: NextRequest) {
   try {
     const { name, email, password } = await req.json();
-    const existingUser = await User.findOne({ email });
+    const existingAdmin = await Admin.findOne({ email });
 
-    if (existingUser) {
+    if (existingAdmin) {
       return new NextResponse("Email is already in use", { status: 400 });
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({
+    const newAdmin = new Admin({
       name,
       email,
       password: hashedPassword,
     });
 
-    const savedUser = await newUser.save();
+    const savedAdmin = await newAdmin.save();
 
     return NextResponse.json({
-      message: "User created successfully",
+      message: "Admin created successfully",
       success: true,
-      newUser,
+      newAdmin,
     });
   } catch (err: any) {
     return new NextResponse(err, {

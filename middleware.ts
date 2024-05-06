@@ -7,16 +7,15 @@ export async function middleware(req: NextRequest) {
     req: req,
     secret: process.env.NEXTAUTH_SECRET,
   });
-  const publicPaths =
-    path === "/auth/login" || path === "/auth/register" || path === "/";
+  const publicPaths = path === "/auth/login" || path === "/";
 
   if (publicPaths && token) {
-    return NextResponse.redirect(new URL("/student", req.nextUrl));
+    return NextResponse.redirect(new URL("/admin", req.nextUrl));
   }
   if (!publicPaths && !token) {
     return NextResponse.redirect(new URL("/auth/login", req.nextUrl));
   }
 }
 export const config = {
-  matcher: ["/", "/auth/login", "/auth/register", "/student"],
+  matcher: ["/", "/auth/login", "/admin"],
 };

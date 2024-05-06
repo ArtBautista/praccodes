@@ -15,33 +15,33 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [error, setError] = useState("");
-  const [user, setUser] = useState({
+  const [admin, setAdmin] = useState({
     email: "",
     password: "",
   });
 
   const handleInputChange = (event: any) => {
     const { name, value } = event.target;
-    return setUser((prevInfo) => ({ ...prevInfo, [name]: value }));
+    return setAdmin((prevInfo) => ({ ...prevInfo, [name]: value }));
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (!user.email || !user.password) {
+      if (!admin.email || !admin.password) {
         setError("please fill all the fields");
         return;
       }
 
       const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-      if (!emailRegex.test(user.email)) {
+      if (!emailRegex.test(admin.email)) {
         setError("Invalid email id");
         return;
       }
       const res = await signIn("credentials", {
-        email: user.email,
-        password: user.password,
+        email: admin.email,
+        password: admin.password,
         redirect: false,
       });
       if (res?.error) {
@@ -49,13 +49,13 @@ const LoginForm = () => {
         setError("Error");
       }
       setError("");
-      router.push("/student");
+      router.push("/admin");
     } catch (error) {
       console.log(error);
       setError("");
     } finally {
       setLoading(false);
-      setUser({
+      setAdmin({
         email: "",
         password: "",
       });
@@ -64,7 +64,9 @@ const LoginForm = () => {
   return (
     <div className="card flex flex-col bg-odsGray m-6 v-y-8  shadow-2xl md:flex-row md:space-y-0">
       <div className="card-body ">
-        <h1 className="flex justify-center text-2xl">Log in to Odyssey</h1>
+        <h1 className="flex justify-center text-2xl">
+          Log in to Odyssey{"[ADMIN]"}
+        </h1>
         <div className="flex flex-col justify-center p-4 md:p-14">
           <form className="grid" onSubmit={handleSubmit}>
             <label className="grid grid-rows-2 m-2 form-control w-full max-w-xs">
@@ -73,7 +75,7 @@ const LoginForm = () => {
                 type={"email"}
                 className="grow"
                 name="email"
-                value={user.email}
+                value={admin.email}
                 onChange={handleInputChange}
               />
             </label>
@@ -84,7 +86,7 @@ const LoginForm = () => {
                 type={"password"}
                 className="grow"
                 name="password"
-                value={user.password}
+                value={admin.password}
                 onChange={handleInputChange}
               />
               <div className="label underline text-odsBlue">
@@ -104,7 +106,7 @@ const LoginForm = () => {
           </form>
           <br></br>
 
-          <button
+          {/* <button
             className="flex justify-center h-full w-full border border-gray-300 text-md p-2 rounded-lg mb-6  hover:bg-black hover:text-white"
             onClick={() => signIn("google")}
           >
@@ -117,7 +119,7 @@ const LoginForm = () => {
             <Link href="/auth/register" className="underline text-red-400 m-1">
               Register
             </Link>
-          </span>
+          </span> */}
         </div>
       </div>
 

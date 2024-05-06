@@ -1,11 +1,10 @@
-import Sidebar from "@/components/Admin/Sidebar";
-import Image from "next/image";
 import React from "react";
+import AdminHome from "@/components/Admin/Home";
 
-export default function AdminHome() {
+export default function AdminPage() {
   return (
     <div>
-      <Sidebar />
+      <AdminHome />
     </div>
   );
 }

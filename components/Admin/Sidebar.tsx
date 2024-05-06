@@ -1,18 +1,17 @@
+"use client";
 import React from "react";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
+import Link from "next/link";
+import { RxHamburgerMenu } from "react-icons/rx";
 const Sidebar = () => {
   return (
-    <div className="flex ">
+    <div className="flex z-10 relative">
       <div className="drawer ">
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex justify-content-center p-5">
           <label htmlFor="my-drawer" className="img img-primary drawer-button ">
-            <Image
-              src={"./hamburger.svg"}
-              alt={"Hamburger dropdown"}
-              width={30}
-              height={30}
-            />
+            <RxHamburgerMenu />
           </label>
         </div>
         <div className="drawer-side">
@@ -29,6 +28,9 @@ const Sidebar = () => {
             </div>
             <hr className="p-3"></hr>
             <li>
+              <Link href="/">Home</Link>
+            </li>
+            <li>
               <a>Account</a>
             </li>
             <li>
@@ -36,6 +38,17 @@ const Sidebar = () => {
             </li>
             <li>
               <a>Courses</a>
+            </li>
+            <li>
+              <Link href="/admin/datastudent">Students</Link>
+            </li>
+            <li>
+              <button
+                className="flexCenter gap-3 rounded shadow hover:text-lBlue-300 transition btn_odsYellow"
+                onClick={() => signOut()}
+              >
+                Logout
+              </button>
             </li>
           </ul>
         </div>
