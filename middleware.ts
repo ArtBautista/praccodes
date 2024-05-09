@@ -1,22 +1,38 @@
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import authConfig from "./auth.config";
+// import { auth } from "./auth";
+import NextAuth from "next-auth";
+import {
+  DEFAULT_LOGIN_REDIRECT,
+  apiAuthPrefix,
+  authRoutes,
+  publicRoutes,
+} from "@/routes";
 
-export async function middleware(req: NextRequest) {
-  const path = req.nextUrl.pathname;
-  const token = await getToken({
-    req: req,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-  const publicPaths =
-    path === "/auth/login" || path === "/auth/register" || path === "/";
+const { auth } = NextAuth(authConfig);
 
-  if (publicPaths && token) {
-    return NextResponse.redirect(new URL("/student", req.nextUrl));
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isLoggedIn = !!req.auth;
+
+  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  if (isApiAuthRoute) {
+    return;
   }
-  if (!publicPaths && !token) {
-    return NextResponse.redirect(new URL("/auth/login", req.nextUrl));
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
+    return;
   }
-}
+  if (!isLoggedIn && !isPublicRoute) {
+    return Response.redirect(new URL("/auth/login/", nextUrl));
+  }
+  return;
+});
+
 export const config = {
-  matcher: ["/", "/auth/login", "/auth/register", "/student"],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

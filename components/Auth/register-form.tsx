@@ -2,146 +2,126 @@
 
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
-import React from "react";
-import { useState } from "react";
-import { Button } from "../LandingPage/Button";
-import { FormError } from "../form-error";
-import { FormSuccess } from "../form-success";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import * as z from "zod";
+// import { RegisterSchema } from "@/models/user";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Button } from "@/components/LandingPage/Button";
+import { FormError } from "@/components/Student/StudentForm/form-error";
+import { FormSuccess } from "@/components/Student/StudentForm/form-success";
 import Image from "next/image";
+import { registerAction } from "@/actions/register";
+import { startTransition, useState, useTransition } from "react";
+import { signIn } from "next-auth/react";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 const RegisterForm = () => {
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const [error, setError] = useState("");
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-
-  const handleInputChange = (event: any) => {
-    const { name, value } = event.target;
-    return setUser((prevInfo) => ({ ...prevInfo, [name]: value }));
-  };
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    setLoading(true);
-    console.log(user);
-    try {
-      if (!user.name || !user.email || !user.password) {
-        setError("please fill all the fields");
-        return;
-      }
-
-      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-      if (!emailRegex.test(user.email)) {
-        setError("Invalid email id");
-        return;
-      }
-
-      const res = await axios.post("/api/register", user);
-      console.log(res.data);
-      if (res.status == 200 || res.status == 201) {
-        console.log("user added Successfully");
-        setError("");
-        router.push("/");
-      }
-    } catch (error) {
-      console.log(error);
-      setError("");
-    } finally {
-      setLoading(false);
-
-      setUser({
-        name: "",
-        email: "",
-        password: "",
-      });
-    }
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
+  const [isPending, startTransition] = useTransition();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  // {
+  // resolver: zodResolver(RegisterSchema),
+  // defaultValues: {
+  //   email: "",
+  //   password: "",
+  //   name: "",
+  // },}
+  const onSubmit = async (data: any) => {
+    // setError("");
+    // setSuccess("");
+    // startTransition(() => {
+    //   registerAction(values).then((data) => {
+    //     setError(data.error);
+    //     setSuccess(data.success);
+    //   });
+    // });
+    await registerAction(data);
   };
   return (
-    <div className="card flex flex-col bg-odsGray v-y-8  shadow-2xl md:flex-row md:space-y-0">
+    <div className="card flex flex-col bg-odsGray m-6 v-y-8  shadow-2xl md:flex-row md:space-y-0">
       <div className="card-body ">
-        <h1 className="flex justify-center text-2xl">Get started for free</h1>
+        <h1 className="flex justify-center text-2xl">Create an account</h1>
         <div className="flex flex-col justify-center p-4 md:p-14">
-          <form className="grid" onSubmit={handleSubmit}>
-            <label className="grid grid-rows-2  form-control w-full max-w-xs">
-              Username
+          <form className="grid" onSubmit={handleSubmit(onSubmit)}>
+            <label className="grid grid-rows-2 m-2 form-control w-full max-w-xs">
+              Name
               <input
-                type={"text"}
+                disabled={isPending}
+                type={"name"}
                 className="grow"
-                placeholder="Username"
-                name="name"
-                value={user.name}
-                onChange={handleInputChange}
+                {...register("name")}
               />
-              {error && <span className="text-red-500 text-sm">{error}</span>}
             </label>
-
-            <label className="grid grid-rows-2 form-control w-full max-w-xs">
+            {/* {errors.name && (
+              <span className="text-red-500 text-sm">
+                {errors.name.message}
+              </span>
+            )} */}
+            <label className="grid grid-rows-2 m-2 form-control w-full max-w-xs">
               Email
               <input
+                disabled={isPending}
                 type={"email"}
                 className="grow"
-                name="email"
-                value={user.email}
-                onChange={handleInputChange}
+                {...register("email")}
               />
-              <div className="label">
-                {error && (
-                  <span className="text-red-500 text-sm">Missing Email</span>
-                )}
-              </div>
             </label>
+            {/* {errors.email && (
+              <span className="text-red-500 text-sm">
+                {errors.email.message}
+              </span>
+            )} */}
 
-            <label className="grid grid-rows-3 form-control w-full max-w-xs">
+            <label className="grid grid-rows-3  m-2 form-control w-full max-w-xs">
               Password
               <input
+                disabled={isPending}
                 type={"password"}
                 className="grow"
-                name="password"
-                value={user.password}
-                onChange={handleInputChange}
+                {...register("password")}
               />
-              <div className="label">
-                {error && (
-                  <span className="text-red-500 text-sm">Missing Password</span>
-                )}
+              <div className="label underline text-odsBlue">
+                <span className="label-text">I forgot my password</span>
               </div>
-              {/* <div className="label">
-            {error && (
-              <span className="text-red-500 text-sm">Missing Password</span>
-            )}
-          </div> */}
             </label>
-            <FormError message="" />
-            <FormSuccess message="" />
+            {/* {errors.email && (
+              <span className="text-red-500 text-sm">
+                {errors.email.message}
+              </span>
+            )} */}
+            <FormError message={error} />
+            <FormSuccess message={success} />
             <div className="grid grid-rows-1 form-control w-full max-w-xs">
-              <Button
+              <button
                 type="submit"
-                variant="btn_odsYellow"
-                title={loading ? "Processing..." : "Register"}
-              />
+                className="flexCenter gap-3 rounded shadow hover:text-lBlue-300 transition btn_odsYellow "
+                disabled={isPending}
+              >
+                Create an Account
+              </button>
             </div>
           </form>
           <br></br>
 
           <button
             className="flex justify-center h-full w-full border border-gray-300 text-md p-2 rounded-lg mb-6  hover:bg-black hover:text-white"
-            onClick={() => signIn("google")}
+            onClick={() => {
+              signIn("google", { callbackUrl: DEFAULT_LOGIN_REDIRECT });
+            }}
           >
             <FcGoogle className="h-7 w-7 mr-4" />
             Register with Google
           </button>
 
           <span className="ul text-odsBlue">
-            Not yet a traveler?
+            Already Traveled with us
             <Link href="/auth/login" className="underline text-red-400 m-1">
-              Log In
+              Login
             </Link>
           </span>
         </div>

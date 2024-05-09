@@ -1,8 +1,11 @@
 import React from "react";
 import Image from "next/image";
 import { Button } from "../LandingPage/Button";
-import { signOut } from "next-auth/react";
+import { logout } from "@/actions/logout";
 const Sidebar = () => {
+  const onClick = () => {
+    logout();
+  };
   return (
     <div className="flex ">
       <div className="drawer ">
@@ -42,7 +45,7 @@ const Sidebar = () => {
             <li>
               <button
                 className="flexCenter gap-3 rounded shadow hover:text-lBlue-300 transition btn_odsYellow"
-                onClick={() => signOut()}
+                onClick={onClick}
               >
                 Logout
               </button>

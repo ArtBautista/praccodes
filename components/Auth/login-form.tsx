@@ -2,111 +2,111 @@
 
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
-import React from "react";
-import { Button } from "../LandingPage/Button";
-import { FormError } from "../form-error";
-import { FormSuccess } from "../form-success";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import * as z from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { FormError } from "@/components/Student/StudentForm/form-error";
+import { FormSuccess } from "@/components/Student/StudentForm/form-success";
 import Image from "next/image";
+import { loginAction } from "@/actions/login";
+import { startTransition, useState, useTransition } from "react";
+import { signIn } from "next-auth/react";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { LoginSchema } from "@/models/login";
+import { useSearchParams } from "next/navigation";
 
 const LoginForm = () => {
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const [error, setError] = useState("");
-  const [user, setUser] = useState({
-    email: "",
-    password: "",
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with different provider !"
+      : "";
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
+  const [isPending, startTransition] = useTransition();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
+  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    setError("");
+    setSuccess("");
 
-  const handleInputChange = (event: any) => {
-    const { name, value } = event.target;
-    return setUser((prevInfo) => ({ ...prevInfo, [name]: value }));
-  };
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      if (!user.email || !user.password) {
-        setError("please fill all the fields");
-        return;
-      }
-
-      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-      if (!emailRegex.test(user.email)) {
-        setError("Invalid email id");
-        return;
-      }
-      const res = await signIn("credentials", {
-        email: user.email,
-        password: user.password,
-        redirect: false,
+    console.log("LOGIN[CLIENT]: ", values);
+    startTransition(() => {
+      loginAction(values).then((data) => {
+        setError(data?.error);
+        // setSuccess(data?.success);
       });
-      if (res?.error) {
-        console.log(res);
-        setError("Error");
-      }
-      setError("");
-      router.push("/student");
-    } catch (error) {
-      console.log(error);
-      setError("");
-    } finally {
-      setLoading(false);
-      setUser({
-        email: "",
-        password: "",
-      });
-    }
+    });
+    // const res = await loginAction(values);
+    // setError(res?.error);
+    // console.log("Response : ", res);
   };
   return (
     <div className="card flex flex-col bg-odsGray m-6 v-y-8  shadow-2xl md:flex-row md:space-y-0">
       <div className="card-body ">
         <h1 className="flex justify-center text-2xl">Log in to Odyssey</h1>
         <div className="flex flex-col justify-center p-4 md:p-14">
-          <form className="grid" onSubmit={handleSubmit}>
+          <form className="grid" onSubmit={handleSubmit(onSubmit)}>
             <label className="grid grid-rows-2 m-2 form-control w-full max-w-xs">
               Email
               <input
+                disabled={isPending}
                 type={"email"}
                 className="grow"
-                name="email"
-                value={user.email}
-                onChange={handleInputChange}
+                {...register("email")}
               />
             </label>
-
+            {errors.email && (
+              <span className="text-red-500 text-sm">
+                {errors.email.message}
+              </span>
+            )}
             <label className="grid grid-rows-3  m-2 form-control w-full max-w-xs">
               Password
               <input
+                disabled={isPending}
                 type={"password"}
                 className="grow"
-                name="password"
-                value={user.password}
-                onChange={handleInputChange}
+                {...register("password")}
               />
               <div className="label underline text-odsBlue">
                 <span className="label-text">I forgot my password</span>
               </div>
-              {/* <div className="label">
-            {error && (
-              <span className="text-red-500 text-sm">Missing Password</span>
-            )}
-          </div> */}
             </label>
-            <FormError message="" />
-            <FormSuccess message="" />
+            {errors.password && (
+              <span className="text-red-500 text-sm">
+                {errors.password.message}
+              </span>
+            )}
+            <FormError message={error || urlError} />
+            <FormSuccess message={success} />
             <div className="grid grid-rows-1 form-control w-full max-w-xs">
-              <Button type="submit" variant="btn_odsYellow" title="Login" />
+              <button
+                type="submit"
+                className="flexCenter gap-3 rounded shadow hover:text-lBlue-300 transition btn_odsYellow "
+                disabled={isPending}
+              >
+                Login
+              </button>
             </div>
           </form>
           <br></br>
 
           <button
             className="flex justify-center h-full w-full border border-gray-300 text-md p-2 rounded-lg mb-6  hover:bg-black hover:text-white"
-            onClick={() => signIn("google")}
+            onClick={() => {
+              signIn("google", { callbackUrl: DEFAULT_LOGIN_REDIRECT });
+            }}
           >
             <FcGoogle className="h-7 w-7 mr-4" />
             Log In with Google
